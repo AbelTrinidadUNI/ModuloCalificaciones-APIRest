@@ -1,0 +1,41 @@
+node index.js ciclo Ciclo > ciclo/Ciclo.java
+
+node index.js clase Clase > clase/Clase.java
+
+node index.js colegio Colegio > colegio/Colegio.java
+
+node index.js contactoEmergencias ContactoEmergencias > contactoEmergencias/ContactoEmergencias.java
+
+node index.js detalleInforme DetalleInforme > detalleInforme/DetalleInforme.java
+
+node index.js detallePA DetallePA > detallePA/DetallePA.java
+
+node index.js detallePN DetallePN > detallePN/DetallePN.java
+
+node index.js dia Dia > dia/Dia.java
+
+node index.js etapa Etapa > etapa/Etapa.java
+
+node index.js evaluacion Evaluacion > evaluacion/Evaluacion.java
+
+node index.js horaCatedra HoraCatedra > horaCatedra/HoraCatedra.java
+
+node index.js horaProfe HoraProfe > horaProfe/HoraProfe.java
+
+node index.js informe Informe > informe/Informe.java
+
+node index.js listaAlumno ListaAlumno > listaAlumno/ListaAlumno.java
+
+node index.js listaMateria ListaMateria > listaMateria/ListaMateria.java
+
+node index.js materia Materia > materia/Materia.java
+
+node index.js persona Persona > persona/Persona.java
+
+node index.js planClase PlanClase > planClase/PlanClase.java
+
+node index.js planillaAsistencia PlanillaAsistencia > planillaAsistencia/PlanillaAsistencia.java
+
+node index.js planillaNota PlanillaNota > planillaNota/PlanillaNota.java
+
+node index.js rol Rol > rol/Rol.java
