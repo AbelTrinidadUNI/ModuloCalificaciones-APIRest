@@ -1,7 +1,7 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.planClase;
 
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.planClase.PlanClaseDomain;
+import com.library.domainLibrary.domain.planClase.PlanClaseDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

@@ -4,14 +4,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.base.BaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.horaProfe.HoraProfesorDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.materia.MateriaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.clase.ClaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.persona.PersonaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.planClase.PlanClaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.planillaAsistencia.PlanillaAsistenciaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.planillaNota.PlanillaNotaDomain;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 import java.util.List;

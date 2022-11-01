@@ -4,9 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.base.BaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.detalleInforme.DetalleInformeDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.persona.PersonaDomain;
+
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 import java.time.*;

@@ -1,6 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.listaMateria;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaMateria.ListaMateriaDomain;
+import com.library.domainLibrary.domain.listaMateria.ListaMateriaDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

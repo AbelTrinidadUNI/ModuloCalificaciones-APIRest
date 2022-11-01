@@ -1,6 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.rol;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.rol.RolDomain;
+import com.library.domainLibrary.domain.rol.RolDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

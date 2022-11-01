@@ -6,12 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.*;
 import java.util.List;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.base.BaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.contactoEmergencias.ContactoEmergenciasDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.informe.InformeDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaAlumno.ListaAlumnoDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaMateria.ListaMateriaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.rol.RolDomain;
+
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 

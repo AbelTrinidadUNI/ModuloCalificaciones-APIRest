@@ -1,11 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dto.clase;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.base.BaseDomain;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.ciclo.CicloDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.colegio.ColegioDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaAlumno.ListaAlumnoDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaMateria.ListaMateriaDomain;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 import javax.persistence.*;

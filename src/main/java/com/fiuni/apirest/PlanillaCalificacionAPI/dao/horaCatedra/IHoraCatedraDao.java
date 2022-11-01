@@ -1,6 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.horaCatedra;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.horaCatedra.HoraCatedraDomain;
+import com.library.domainLibrary.domain.horaCatedra.HoraCatedraDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

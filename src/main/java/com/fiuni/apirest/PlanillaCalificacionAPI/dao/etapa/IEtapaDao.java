@@ -1,6 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.etapa;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.etapa.EtapaDomain;
+import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;

@@ -4,10 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.base.BaseDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.listaMateria.ListaMateriaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.dia.DiaDomain;
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.horaCatedra.HoraCatedraDomain;
+
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 

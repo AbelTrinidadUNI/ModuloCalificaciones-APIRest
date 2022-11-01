@@ -1,6 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.contactoEmergencias;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.domain.contactoEmergencias.ContactoEmergenciasDomain;
+import com.library.domainLibrary.domain.contactoEmergencias.ContactoEmergenciasDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
