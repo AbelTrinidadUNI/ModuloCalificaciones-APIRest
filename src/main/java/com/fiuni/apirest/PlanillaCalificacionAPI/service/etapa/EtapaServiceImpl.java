@@ -100,6 +100,11 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
     }
 
+    @Override
+    public Integer deleteAbs(Integer id) {
+        return etapaDao.deleteAbsolut(id);
+    }
+
 
 
     /*@Override

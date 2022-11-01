@@ -14,4 +14,6 @@ public interface IEtapaService extends IBaseService<EtapaDTO, EtapaResult> {
     public abstract EtapaDTO update(Integer id, EtapaDTO dto);
 
     public abstract Boolean delete(Integer id);
+
+    public abstract Integer deleteAbs(Integer id);
 }

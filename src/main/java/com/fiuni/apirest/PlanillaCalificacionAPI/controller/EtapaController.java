@@ -40,10 +40,13 @@ public class EtapaController {
 		return etapaService.update(id, dto);
 	}
 
-	@DeleteMapping("/{id}")
-	public boolean putEtapa(@PathVariable(value = "id") Integer id) {
+	@DeleteMapping("eliminar/{id}")
+	public boolean deleteEtapa(@PathVariable(value = "id") Integer id) {
 		return etapaService.delete(id);
 	}
 
-
+	@DeleteMapping("/absolute/{id}")
+	public Integer deleteAbsEtapa(@PathVariable(value = "id") Integer id){
+		return etapaService.deleteAbs(id);
+	}
 }
