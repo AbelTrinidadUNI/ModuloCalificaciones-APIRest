@@ -8,7 +8,9 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlanillaNotaDTO, DetallePlanillaNotaDomain, DetallePlanillaNotaResult> implements IDetallePlanillaNotaService {
@@ -17,25 +19,38 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
     private IDetallePNDao detalle;
 
     @Override
-    public DetallePlanillaNotaDTO save(DetallePlanillaNotaDTO dto) {
-        return convertDomainToDto(detalle.save(convertDtoToDomain(dto)));
+    @Transactional
+    public ResponseEntity<DetallePlanillaNotaDTO> save(DetallePlanillaNotaDTO dto) {
+        dto.setEstado(dto.getEstado() == null ? true : dto.getEstado());
+        DetallePlanillaNotaDTO response = convertDomainToDto(detalle.save(convertDtoToDomain(dto)));
+        return response != null ? new ResponseEntity<DetallePlanillaNotaDTO>(response, HttpStatus.CREATED)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @Override
-    public DetallePlanillaNotaDTO getById(Integer id) {
-        return detalle.findById(id).map(d -> convertDomainToDto(d)).orElse(null);
+    @Transactional
+    public ResponseEntity<DetallePlanillaNotaDTO> getById(Integer id) {
+        DetallePlanillaNotaDTO response = detalle.findById(id).map(d -> convertDomainToDto(d)).orElse(null);
+        return response != null ? new ResponseEntity(response, HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public DetallePlanillaNotaResult getAll(Pageable pageable) {
-        DetallePlanillaNotaResult detalles = new DetallePlanillaNotaResult(detalle.findAll(pageable).map(d -> convertDomainToDto(d)).toList());
-        return detalles;
+    @Transactional
+    public ResponseEntity<DetallePlanillaNotaResult> getAll(Pageable pageable) {
+        DetallePlanillaNotaResult result = new DetallePlanillaNotaResult(detalle.findAll(pageable).map(d -> convertDomainToDto(d)).toList());
+        return result != null ? new ResponseEntity<DetallePlanillaNotaResult>(result, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public DetallePlanillaNotaDTO update(Integer id, DetallePlanillaNotaDTO dto) {
-        if (dto.getEstado() != null && dto.getObservacion() != null && dto.getPuntaje() != null) {
-            return detalle.findById(id).map(d -> {
+    @Transactional
+    public ResponseEntity<DetallePlanillaNotaDTO> update(Integer id, DetallePlanillaNotaDTO dto) {
+        if (dto.getEstado() != null && dto.getObservacion() != null && dto.getPuntaje() != null
+                && dto.getIdEvaluacion() != null && dto.getIdEvaluacion() > 0
+                && dto.getIdPlanillaNota() != null && dto.getIdPlanillaNota() > 0
+                && dto.getIdListaAlumno() != null && dto.getIdListaAlumno() > 0) {
+            DetallePlanillaNotaDTO result = detalle.findById(id).map(d -> {
 
                 d.setEstado(dto.getEstado());
                 d.setIdPlanillaNota(dto.getIdPlanillaNota());
@@ -46,9 +61,13 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
 
                 dto.setId(d.getId());
                 return save(dto);
-            }).orElse(null) != null ? dto : null;
+            }).orElse(null).getBody();
+            return result != null ? new ResponseEntity<DetallePlanillaNotaDTO>(result, HttpStatus.NO_CONTENT) :
+                    new ResponseEntity<>(result, HttpStatus.CONFLICT);
+
         }
-        return null;
+        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+
     }
 
 

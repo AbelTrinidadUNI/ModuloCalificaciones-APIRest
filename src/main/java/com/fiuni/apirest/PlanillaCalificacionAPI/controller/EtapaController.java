@@ -7,6 +7,7 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.IEtapaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,32 +22,32 @@ public class EtapaController {
 	private IEtapaService etapaService;
 
 	@GetMapping("/{id}")
-	public EtapaDTO getById(@PathVariable(value = "id") Integer cityId) {
+	public ResponseEntity<EtapaDTO> getById(@PathVariable(value = "id") Integer cityId) {
 		return etapaService.getById(cityId);
 	}
 
 	@GetMapping(path = "/page/{page_num}")
-	public EtapaResult getClients(@PathVariable(value = "page_num")Integer pageNum) {
+	public ResponseEntity<EtapaResult> getClients(@PathVariable(value = "page_num")Integer pageNum) {
 		return etapaService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));
 	}
 
 	@PostMapping
-	public EtapaDTO save(@Validated @RequestBody EtapaDTO etapa) {
+	public ResponseEntity<EtapaDTO> save(@Validated @RequestBody EtapaDTO etapa) {
 		return etapaService.save(etapa);
 	}
 
 	@PutMapping("/{id}")
-	public EtapaDTO putEtapa(@PathVariable(value = "id") Integer id, @RequestBody EtapaDTO dto) {
+	public ResponseEntity<EtapaDTO> putEtapa(@PathVariable(value = "id") Integer id, @RequestBody EtapaDTO dto) {
 		return etapaService.update(id, dto);
 	}
 
 	@DeleteMapping("eliminar/{id}")
-	public boolean deleteEtapa(@PathVariable(value = "id") Integer id) {
+	public ResponseEntity<Boolean> deleteEtapa(@PathVariable(value = "id") Integer id) {
 		return etapaService.delete(id);
 	}
 
 	@DeleteMapping("/absolute/{id}")
-	public Integer deleteAbsEtapa(@PathVariable(value = "id") Integer id){
+	public ResponseEntity<Integer> deleteAbsEtapa(@PathVariable(value = "id") Integer id){
 		return etapaService.deleteAbs(id);
 	}
 }

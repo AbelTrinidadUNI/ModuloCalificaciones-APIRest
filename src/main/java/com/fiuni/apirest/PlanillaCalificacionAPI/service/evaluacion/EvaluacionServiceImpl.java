@@ -10,6 +10,8 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,27 +23,74 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     private IEtapaDao etapaDao;
 
     @Override
-    public EvaluacionDTO save(EvaluacionDTO dto) {
+    @Transactional
+    public ResponseEntity<EvaluacionDTO> save(EvaluacionDTO dto) {
         dto.setEstado(dto.getEstado() == null || dto.getEstado());
 
-        return convertDomainToDto(evaluacionDao.save(convertDtoToDomain(dto)));
+        EvaluacionDTO response = convertDomainToDto(evaluacionDao.save(convertDtoToDomain(dto)));
+
+        return response != null ? new ResponseEntity<EvaluacionDTO>(response, HttpStatus.CREATED)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
 
     @Override
-    public EvaluacionDTO getById(Integer id) {
-        return evaluacionDao.findById(id).map(evaluacionDomain -> convertDomainToDto(evaluacionDomain)).orElse(null);
+    @Transactional
+    public ResponseEntity<EvaluacionDTO> getById(Integer id) {
+        EvaluacionDTO response = evaluacionDao.findById(id).map(evaluacionDomain -> convertDomainToDto(evaluacionDomain)).orElse(null);
+
+        return response != null ? new ResponseEntity<EvaluacionDTO>(response, HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @Override
     @Transactional
-    public EvaluacionResult getAll(Pageable pageable) {
-        EvaluacionResult result = new EvaluacionResult(evaluacionDao.findAll(pageable).map(evaluacion -> {
+    public ResponseEntity<EvaluacionResult> getAll(Pageable pageable) {
+        EvaluacionResult response = new EvaluacionResult(evaluacionDao.findAll(pageable).map(evaluacion -> {
             return convertDomainToDto(evaluacion);
         }).toList());
 
-        return result;
+        return response != null ? new ResponseEntity(response, HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<EvaluacionDTO> update(Integer id, EvaluacionDTO dto) {
+        if (dto.getEstado() != null && dto.getIdEtapa() != null && dto.getNombre() != null && dto.getTotalPunto() != null) {
+            EvaluacionDTO response = evaluacionDao.findById(id).map(evaluacionDomain -> {
+                evaluacionDomain.setNombre(dto.getNombre());
+                evaluacionDomain.setEstado(dto.getEstado());
+                evaluacionDomain.setIdEtapa(dto.getIdEtapa());
+                evaluacionDomain.setTotalPunto(dto.getTotalPunto());
+                dto.setId(evaluacionDomain.getId());
+                return save(dto);
+            }).orElse(null).getBody();
+            return response != null ? new ResponseEntity<EvaluacionDTO>(HttpStatus.NO_CONTENT)
+                    : new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        }
+        return new ResponseEntity<EvaluacionDTO>(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Boolean> delete(Integer id) {
+        Boolean response = evaluacionDao.findById(id).map(evaluacionDomain -> {
+            EvaluacionDTO dto = convertDomainToDto(evaluacionDomain);
+            if (dto.getEstado()) {
+                dto.setEstado(false);
+                save(dto);
+                return true;
+            } else {
+                return false;
+            }
+        }).orElse(false);
+
+        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
 
     @Override
     protected EvaluacionDTO convertDomainToDto(EvaluacionDomain domain) {
@@ -75,33 +124,4 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     }
 
 
-    @Override
-    @Transactional
-    public EvaluacionDTO update(Integer id, EvaluacionDTO dto) {
-        if (dto.getEstado() != null && dto.getIdEtapa() != null && dto.getNombre() != null && dto.getTotalPunto() != null) {
-            return evaluacionDao.findById(id).map(evaluacionDomain -> {
-                evaluacionDomain.setNombre(dto.getNombre());
-                evaluacionDomain.setEstado(dto.getEstado());
-                evaluacionDomain.setIdEtapa(dto.getIdEtapa());
-                evaluacionDomain.setTotalPunto(dto.getTotalPunto());
-                dto.setId(evaluacionDomain.getId());
-                return save(dto);
-            }).orElse(null) != null ? dto : null;
-        }
-        return null;
-    }
-
-    @Override
-    public Boolean delete(Integer id) {
-        return evaluacionDao.findById(id).map(evaluacionDomain -> {
-            EvaluacionDTO dto = convertDomainToDto(evaluacionDomain);
-            if (dto.getEstado()) {
-                dto.setEstado(false);
-                save(dto);
-                return true;
-            } else {
-                return false;
-            }
-        }).orElse(false);
-    }
 }

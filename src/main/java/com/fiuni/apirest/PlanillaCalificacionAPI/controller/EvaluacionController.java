@@ -7,6 +7,7 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion.IEvaluacionS
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,27 +18,27 @@ public class EvaluacionController {
     private IEvaluacionService evaluacionService;
 
     @GetMapping("/{id}")
-    public EvaluacionDTO getById(@PathVariable(value = "id") Integer cityId) {
+    public ResponseEntity<EvaluacionDTO> getById(@PathVariable(value = "id") Integer cityId) {
         return evaluacionService.getById(cityId);
     }
 
     @GetMapping(path = "/page/{page_num}")
-    public EvaluacionResult getClients(@PathVariable(value = "page_num")Integer pageNum) {
+    public ResponseEntity<EvaluacionResult> getClients(@PathVariable(value = "page_num")Integer pageNum) {
         return evaluacionService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));
     }
 
     @PostMapping
-    public EvaluacionDTO save(@Validated @RequestBody EvaluacionDTO evaluacion) {
+    public ResponseEntity<EvaluacionDTO> save(@Validated @RequestBody EvaluacionDTO evaluacion) {
         return evaluacionService.save(evaluacion);
     }
 
     @PutMapping("/{id}")
-    public EvaluacionDTO putEtapa(@PathVariable(value = "id") Integer id, @RequestBody EvaluacionDTO dto) {
+    public ResponseEntity<EvaluacionDTO> putEtapa(@PathVariable(value = "id") Integer id, @RequestBody EvaluacionDTO dto) {
         return evaluacionService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public boolean putEtapa(@PathVariable(value = "id") Integer id) {
+    public ResponseEntity<Boolean> putEtapa(@PathVariable(value = "id") Integer id) {
         return evaluacionService.delete(id);
     }
 

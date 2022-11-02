@@ -2,12 +2,16 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.service.listaMateria;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.listaMateria.IListaMateriaDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.library.domainLibrary.domain.listaMateria.ListaMateriaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, ListaMateriaDomain, ListaMateriaResult> implements IListaMateriaService {
@@ -40,38 +44,48 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
     }
 
     @Override
-    public ListaMateriaDTO save(ListaMateriaDTO dto) {
-        return convertDomainToDto(listaMateriaDao.save(convertDtoToDomain(dto)));
+    public ResponseEntity<ListaMateriaDTO> save(ListaMateriaDTO dto) {
+        ListaMateriaDTO response = convertDomainToDto(listaMateriaDao.save(convertDtoToDomain(dto)));
+        return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @Override
-    public ListaMateriaDTO getById(Integer id) {
-        return convertDomainToDto(listaMateriaDao.findById(id).orElse(null));
+    public ResponseEntity<ListaMateriaDTO> getById(Integer id) {
+        ListaMateriaDTO response = convertDomainToDto(listaMateriaDao.findById(id).orElse(null));
+
+        return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public ListaMateriaResult getAll(Pageable pageable) {
-        return new ListaMateriaResult(listaMateriaDao.findAll(pageable).map(p -> convertDomainToDto(p)).toList());
+    public ResponseEntity<ListaMateriaResult> getAll(Pageable pageable) {
+        ListaMateriaResult response = new ListaMateriaResult(listaMateriaDao.findAll(pageable).map(p -> convertDomainToDto(p)).toList());
+
+        return response != null ? new ResponseEntity<ListaMateriaResult>(response, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @Override
     @Transactional
-    public ListaMateriaDTO update(Integer id, ListaMateriaDTO dto) {
+    public ResponseEntity<ListaMateriaDTO> update(Integer id, ListaMateriaDTO dto) {
         if (dto.getEstado() != null && dto.getIdMateria() != null && dto.getIdClase() != null && dto.getIdProfesor() != null) {
-            return listaMateriaDao.findById(id).map(domain -> {
+            ListaMateriaDTO response = listaMateriaDao.findById(id).map(domain -> {
                 domain.setEstado(dto.getEstado());
                 domain.setIdMateria(dto.getIdMateria());
                 domain.setIdClase(dto.getIdClase());
                 domain.setIdProfesor(dto.getIdProfesor());
                 dto.setId(domain.getId());
                 return save(dto);
-            }).orElse(null) != null ? dto : null;
+            }).orElse(null).getBody();
+            return response != null ? new ResponseEntity<ListaMateriaDTO>(HttpStatus.NO_CONTENT) : new ResponseEntity<ListaMateriaDTO>(HttpStatus.CONFLICT);
+
         }
-        return null;
+        return new ResponseEntity<ListaMateriaDTO>(HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    public Boolean delete(Integer id) {
-        return listaMateriaDao.delete(id);
+    public ResponseEntity<Boolean> delete(Integer id) {
+        Boolean response = listaMateriaDao.delete(id);
+        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 }
