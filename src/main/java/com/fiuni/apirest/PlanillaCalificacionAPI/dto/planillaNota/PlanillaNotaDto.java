@@ -9,7 +9,7 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
 
 import java.util.List;
 
-@XmlRootElement(name = "PLANILLA_ASISTENCIAS")
+@XmlRootElement(name = "PLANILLA_NOTAS")
 public class PlanillaNotaDto extends BaseDTO {
 
     private Integer idListaMateria;

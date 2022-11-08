@@ -14,4 +14,11 @@ public interface IPlanillaNotaDao extends CrudRepository<PlanillaNotaDomain, Int
 
     @Query(value = "UPDATE PlanillaNotaDomain SET estado = 0 WHERE id = ?1")
     public Boolean delete(Integer id);
+
+   // @Query(value = "SELECT TOP(1) FROM PlanillaNotaDomain WHERE idListaMateria = ?1")
+    //public PlanillaNotaDomain getPlanillaNotaByIdListaMateria(Integer idLM);
+
+    public PlanillaNotaDomain findFirstByIdListaMateria(Integer idListaMateria);
+
+    //public Integer
 }

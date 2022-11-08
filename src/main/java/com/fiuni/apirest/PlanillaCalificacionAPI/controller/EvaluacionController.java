@@ -18,17 +18,17 @@ public class EvaluacionController {
     private IEvaluacionService evaluacionService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<EvaluacionDTO> getById(@PathVariable(value = "id") Integer cityId) {
+    public ResponseEntity<EvaluacionDTO> getById(@PathVariable(value = "id") Integer cityId) throws Exception{
         return evaluacionService.getById(cityId);
     }
 
     @GetMapping(path = "/page/{page_num}")
-    public ResponseEntity<EvaluacionResult> getClients(@PathVariable(value = "page_num")Integer pageNum) {
+    public ResponseEntity<EvaluacionResult> getClients(@PathVariable(value = "page_num")Integer pageNum) throws Exception{
         return evaluacionService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));
     }
 
     @PostMapping
-    public ResponseEntity<EvaluacionDTO> save(@Validated @RequestBody EvaluacionDTO evaluacion) {
+    public ResponseEntity<EvaluacionDTO> save(@Validated @RequestBody EvaluacionDTO evaluacion) throws Exception {
         return evaluacionService.save(evaluacion);
     }
 

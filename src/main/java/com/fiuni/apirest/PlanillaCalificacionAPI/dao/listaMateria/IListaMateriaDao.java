@@ -1,5 +1,6 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.dao.listaMateria;
 
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaConAlumnosDTO;
 import com.library.domainLibrary.domain.listaMateria.ListaMateriaDomain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,9 @@ public interface IListaMateriaDao extends CrudRepository<ListaMateriaDomain, Int
 
     @Query(value = "UPDATE ListaMateriaDomain SET estado = 0 WHERE id = ?1")
     public Boolean delete(Integer id);
+
+    //@Query(value = "SELECT * FROM ListaMateriaDomain ")
+    //public ListaMateriaConAlumnosDTO getListaMateriasConAlumnos(Integer idListaMateria);
 
 }
 

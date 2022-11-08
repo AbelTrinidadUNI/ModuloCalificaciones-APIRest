@@ -5,8 +5,12 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dao.etapa.IEtapaDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
+import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +26,20 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
     @Autowired
     private IEtapaDao etapaDao;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+
 
     @Override
     @Transactional
     public ResponseEntity<EtapaDTO> save(EtapaDTO dto) {
         dto.setEstado(dto.getEstado() == null ? true : dto.getEstado());
-        EtapaDTO response = convertDomainToDto(etapaDao.save(convertDtoToDomain(dto)));
+        EtapaDomain domain = etapaDao.save(convertDtoToDomain(dto));
+        EtapaDTO response = convertDomainToDto(domain);
+        if(dto.getId() == null){
+            cacheManager.getCache(Settings.CACHE_NAME).put("API_ETAPA_" + response.getId(), domain);
+        }
         return response != null ? new ResponseEntity<EtapaDTO>(response, HttpStatus.CREATED)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
@@ -35,6 +47,7 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
     @Override
     @Transactional
+    @Cacheable(value = Settings.CACHE_NAME, key="'API_ETAPA_' + #id")
     public ResponseEntity<EtapaDTO> getById(Integer id) {
         Optional<EtapaDomain> etapaDomainOp = etapaDao.findById(id);
         EtapaDTO response = etapaDomainOp.map(etapa -> {
@@ -50,7 +63,10 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
     @Transactional
     public ResponseEntity<EtapaResult> getAll(Pageable pageable) {
         EtapaResult result = new EtapaResult(etapaDao.findAll(pageable).map(etapa -> {
-            return convertDomainToDto(etapa);
+            EtapaDTO dto = convertDomainToDto(etapa);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_ETAPA_" + dto.getId(), dto);
+            return dto;
+
         }).toList());
 
         return result != null ? new ResponseEntity<EtapaResult>(result, HttpStatus.OK)
@@ -94,6 +110,17 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
     public ResponseEntity<Integer> deleteAbs(Integer id) {
         Integer response = etapaDao.deleteAbsolut(id);
         return new ResponseEntity<Integer>(response, response > 0 ? HttpStatus.OK : HttpStatus.METHOD_NOT_ALLOWED);//ResponseEntity.etapaDao.deleteAbsolut(id);
+    }
+
+    @Override
+    @Cacheable(value = Settings.CACHE_NAME, key="'API_ETAPA_' + #id")
+    public EtapaDTO getByID(Integer id) throws Exception {
+        Optional<EtapaDomain> etapaDomainOp = etapaDao.findById(id);
+        EtapaDTO response = etapaDomainOp.map(etapa -> {
+            return convertDomainToDto(etapa);
+        }).orElse(null);
+
+        return response;
     }
 
 

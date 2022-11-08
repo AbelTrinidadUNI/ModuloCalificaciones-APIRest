@@ -8,7 +8,7 @@ public abstract class BaseResult<DTO extends BaseDTO> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private List<DTO> _dtos;
-
+	private Integer total = 0;
 	protected List<DTO> getList() {
 		return _dtos;
 	}
@@ -19,5 +19,9 @@ public abstract class BaseResult<DTO extends BaseDTO> implements Serializable {
 
 	public Integer getTotal() {
 		return null == _dtos ? 0 : _dtos.size();
+	}
+
+	public void setTotal(Integer total){
+		this.total = total;
 	}
 }

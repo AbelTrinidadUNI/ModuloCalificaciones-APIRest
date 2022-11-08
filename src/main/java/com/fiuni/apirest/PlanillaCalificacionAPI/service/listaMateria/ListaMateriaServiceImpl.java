@@ -2,12 +2,15 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.service.listaMateria;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.listaMateria.IListaMateriaDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.planillaNota.IPlanillaNotaDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaConAlumnosDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.listaMateria.ListaMateriaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.library.domainLibrary.domain.listaMateria.ListaMateriaDomain;
+import com.library.domainLibrary.domain.planillaNota.PlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
     @Autowired
     private IListaMateriaDao listaMateriaDao;
 
+    @Autowired
+    private IPlanillaNotaDao planillaNotaDao;
 
     @Override
     protected ListaMateriaDTO convertDomainToDto(ListaMateriaDomain domain) {
@@ -88,4 +93,5 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
         Boolean response = listaMateriaDao.delete(id);
         return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
+
 }

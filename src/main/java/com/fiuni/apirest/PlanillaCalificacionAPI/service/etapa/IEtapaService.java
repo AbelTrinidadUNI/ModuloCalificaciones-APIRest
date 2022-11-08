@@ -18,4 +18,6 @@ public interface IEtapaService extends IBaseService<EtapaDTO, EtapaResult> {
     public abstract ResponseEntity<Boolean> delete(Integer id);
 
     public abstract ResponseEntity<Integer> deleteAbs(Integer id);
+
+    public EtapaDTO getByID(Integer id) throws Exception;
 }

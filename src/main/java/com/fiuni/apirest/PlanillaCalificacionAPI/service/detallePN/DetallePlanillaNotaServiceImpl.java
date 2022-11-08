@@ -2,21 +2,30 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaConEvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionConEtapaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
+import com.library.domainLibrary.domain.etapa.EtapaDomain;
+import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
+import com.library.domainLibrary.domain.planillaNota.PlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@Service
 public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlanillaNotaDTO, DetallePlanillaNotaDomain, DetallePlanillaNotaResult> implements IDetallePlanillaNotaService {
 
     @Autowired
     private IDetallePNDao detalle;
+    private DetallePlanillaNotaDomain detallePlanillaNotaDomain;
 
     @Override
     @Transactional
@@ -46,7 +55,7 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
     @Override
     @Transactional
     public ResponseEntity<DetallePlanillaNotaDTO> update(Integer id, DetallePlanillaNotaDTO dto) {
-        if (dto.getEstado() != null && dto.getObservacion() != null && dto.getPuntaje() != null
+        if (dto != null && dto.getEstado() != null && dto.getObservacion() != null && dto.getPuntaje() != null
                 && dto.getIdEvaluacion() != null && dto.getIdEvaluacion() > 0
                 && dto.getIdPlanillaNota() != null && dto.getIdPlanillaNota() > 0
                 && dto.getIdListaAlumno() != null && dto.getIdListaAlumno() > 0) {
@@ -70,6 +79,13 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
 
     }
 
+    @Override
+    public ResponseEntity<Boolean> delete(Integer id) {
+        Boolean response = detalle.delete(id);
+
+        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+
+    }
 
 
     @Override
@@ -96,6 +112,62 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
         domain.setIdEvaluacion(dto.getIdEvaluacion());
         domain.setIdListaAlumno(dto.getIdListaAlumno());
         domain.setPuntaje(dto.getPuntaje());
+
+        return domain;
+    }
+
+
+    @Override
+    public DetallePlanillaNotaConEvaluacionDTO convertDomainToDto2(DetallePlanillaNotaDomain domain) {
+
+        DetallePlanillaNotaConEvaluacionDTO dto = new DetallePlanillaNotaConEvaluacionDTO();
+
+        dto.setId(domain.getId());
+        dto.setObservacion(domain.getObservacion());
+        dto.setIdListaAlumno(domain.getIdListaAlumno());
+        dto.setNombreAlumno(domain.getListaAlumno().getAlumno().getNombre());
+        dto.setPuntaje(domain.getPuntaje());
+
+        EvaluacionConEtapaDTO evDTO = new EvaluacionConEtapaDTO();
+        evDTO.setId(domain.getIdEvaluacion());
+        evDTO.setIdEtapa(domain.getEvaluacion().getIdEtapa());
+        evDTO.setNombreEtapa(domain.getEvaluacion().getEtapa().getDescripcion());
+        evDTO.setNombreEvaluacion(domain.getEvaluacion().getNombre());
+        evDTO.setTotalPunto(domain.getEvaluacion().getTotalPunto());
+
+
+        dto.setEvaluacion(evDTO);
+        return dto;
+    }
+
+    //solo convierte la tabla a la de detalles
+    @Override
+    public DetallePlanillaNotaDomain convertDtoToDomain2(DetallePlanillaNotaConEvaluacionDTO dto) {
+        DetallePlanillaNotaDomain domain = new DetallePlanillaNotaDomain();
+        domain.setId(dto.getId());
+        domain.setIdListaAlumno(dto.getIdListaAlumno());
+        domain.setEstado(dto.getEstadoDetalle());
+        domain.setPuntaje(dto.getPuntaje());
+        domain.setIdEvaluacion(dto.getEvaluacion().getId());
+        domain.setIdPlanillaNota(dto.getIdPlanillaNota());
+        domain.setObservacion(dto.getObservacion());
+
+        return domain;
+    }
+
+    public EtapaDomain convertDtoToDomainEtapas(DetallePlanillaNotaConEvaluacionDTO dto) {
+        EtapaDomain domain = new EtapaDomain();
+        domain.setId(dto.getId());
+        domain.setDescripcion(dto.getEvaluacion().getNombreEtapa());
+        return domain;
+    }
+
+    public EvaluacionDomain convertDtoToDomainEvaluacion(DetallePlanillaNotaConEvaluacionDTO dto) {
+        EvaluacionDomain domain = new EvaluacionDomain();
+        domain.setId(dto.getId());
+        domain.setTotalPunto(dto.getEvaluacion().getTotalPunto());
+        domain.setNombre(dto.getEvaluacion().getNombreEvaluacion());
+        domain.setIdEtapa(dto.getEvaluacion().getIdEtapa());
 
         return domain;
     }

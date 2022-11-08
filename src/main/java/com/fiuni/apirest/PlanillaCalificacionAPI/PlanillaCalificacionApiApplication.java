@@ -2,12 +2,18 @@ package com.fiuni.apirest.PlanillaCalificacionAPI;
 
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.Entity;
 
 
+@EnableCaching
 @SpringBootApplication
 @EntityScan({"com.library.domainLibrary.domain.base",
 		"com.library.domainLibrary.domain.ciclo",
@@ -31,6 +37,7 @@ import javax.persistence.Entity;
 		"com.library.domainLibrary.domain.planillaAsistencia",
 		"com.library.domainLibrary.domain.rol",
 		"com.library.domainLibrary.domain.planillaNota"})
+@ImportResource("classpath:memcached.xml")
 public class PlanillaCalificacionApiApplication {
 
 	public static void main(String[] args) {
