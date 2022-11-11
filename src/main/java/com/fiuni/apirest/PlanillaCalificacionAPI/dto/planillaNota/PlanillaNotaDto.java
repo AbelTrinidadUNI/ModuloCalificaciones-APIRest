@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.base.BaseDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class PlanillaNotaDto extends BaseDTO {
 
     private Integer idListaMateria;
 
+    private List<DetallePlanillaNotaDTO> detalles;
     private Boolean estado;
 
 
@@ -34,5 +36,13 @@ public class PlanillaNotaDto extends BaseDTO {
 
     public void setEstado(Boolean estado) {
         this.estado = estado;
+    }
+
+    public List<DetallePlanillaNotaDTO> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetallePlanillaNotaDTO> detalles) {
+        this.detalles = detalles;
     }
 }

@@ -12,9 +12,9 @@ import java.util.stream.DoubleStream;
 
 public interface IDetallePlanillaNotaService extends IBaseService<DetallePlanillaNotaDTO, DetallePlanillaNotaResult> {
 
-    public abstract ResponseEntity<DetallePlanillaNotaDTO> update(Integer id, DetallePlanillaNotaDTO dto);
+    public abstract DetallePlanillaNotaDTO update(Integer id, DetallePlanillaNotaDTO dto);
 
-    public abstract ResponseEntity<Boolean> delete(Integer id);
+    public abstract Boolean delete(Integer id);
 
     public abstract DetallePlanillaNotaConEvaluacionDTO convertDomainToDto2(DetallePlanillaNotaDomain domain);
     public abstract DetallePlanillaNotaDomain convertDtoToDomain2(DetallePlanillaNotaConEvaluacionDTO dto);

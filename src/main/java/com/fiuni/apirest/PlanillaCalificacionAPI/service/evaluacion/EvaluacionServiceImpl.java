@@ -7,8 +7,11 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
+import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,42 +25,55 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     @Autowired(required = true)
     private IEtapaDao etapaDao;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @Override
     @Transactional
-    public ResponseEntity<EvaluacionDTO> save(EvaluacionDTO dto) {
+    public EvaluacionDTO save(EvaluacionDTO dto) {
         dto.setEstado(dto.getEstado() == null || dto.getEstado());
 
         EvaluacionDTO response = convertDomainToDto(evaluacionDao.save(convertDtoToDomain(dto)));
 
-        return response != null ? new ResponseEntity<EvaluacionDTO>(response, HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        if (dto.getId() == null) {
+            cacheManager.getCache(Settings.CACHE_NAME).put("API_EVALUACION_" + response.getId(), response);
+        }
+        return response;
     }
 
 
     @Override
     @Transactional
-    public ResponseEntity<EvaluacionDTO> getById(Integer id) {
+    @Cacheable(value = Settings.CACHE_NAME, key = "'API_EVALUACION_' + #id")
+    public EvaluacionDTO getById(Integer id) {
         EvaluacionDTO response = evaluacionDao.findById(id).map(evaluacionDomain -> convertDomainToDto(evaluacionDomain)).orElse(null);
 
-        return response != null ? new ResponseEntity<EvaluacionDTO>(response, HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.NOT_FOUND);
+        return response;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<EvaluacionResult> getAll(Pageable pageable) {
-        EvaluacionResult response = new EvaluacionResult(evaluacionDao.findAll(pageable).map(evaluacion -> {
-            return convertDomainToDto(evaluacion);
+    public EvaluacionResult getAll(Pageable pageable) {
+        /*EvaluacionResult response = new EvaluacionResult(evaluacionDao.findAll(pageable).map(evaluacion -> {
+                    EvaluacionDTO dto = convertDomainToDto(evaluacion);
+                    cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_EVALUACION_" + dto.getId(), dto);
+                    return dto;
+                }).toList());
+        */
+
+        EvaluacionResult response = new EvaluacionResult(evaluacionDao.getByEstadoTrue(pageable).map(evaluacion -> {
+            EvaluacionDTO dto = convertDomainToDto(evaluacion);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_EVALUACION_" + dto.getId(), dto);
+            return dto;
         }).toList());
 
-        return response != null ? new ResponseEntity(response, HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.NOT_FOUND);
+        return response;
     }
 
 
     @Override
     @Transactional
-    public ResponseEntity<EvaluacionDTO> update(Integer id, EvaluacionDTO dto) {
+    public EvaluacionDTO update(Integer id, EvaluacionDTO dto) {
         if (dto.getEstado() != null && dto.getIdEtapa() != null && dto.getNombre() != null && dto.getTotalPunto() != null) {
             EvaluacionDTO response = evaluacionDao.findById(id).map(evaluacionDomain -> {
                 evaluacionDomain.setNombre(dto.getNombre());
@@ -65,30 +81,39 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                 evaluacionDomain.setIdEtapa(dto.getIdEtapa());
                 evaluacionDomain.setTotalPunto(dto.getTotalPunto());
                 dto.setId(evaluacionDomain.getId());
+                cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_EVALUACION_" + id);
                 return save(dto);
-            }).orElse(null).getBody();
-            return response != null ? new ResponseEntity<EvaluacionDTO>(HttpStatus.NO_CONTENT)
-                    : new ResponseEntity<>(HttpStatus.CONFLICT);
+            }).orElse(null);
+
+            if(response != null){
+                cacheManager.getCache(Settings.CACHE_NAME).put("API_EVALUACION_" + response.getId(), response);
+            }
+
+            return response;
+
 
         }
-        return new ResponseEntity<EvaluacionDTO>(HttpStatus.BAD_REQUEST);
+        return null;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Boolean> delete(Integer id) {
+    public Boolean delete(Integer id) {
         Boolean response = evaluacionDao.findById(id).map(evaluacionDomain -> {
             EvaluacionDTO dto = convertDomainToDto(evaluacionDomain);
             if (dto.getEstado()) {
                 dto.setEstado(false);
                 save(dto);
+                if(dto != null){
+                    cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_EVALUACION_" + id);
+                }
                 return true;
             } else {
                 return false;
             }
         }).orElse(false);
 
-        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        return response;
     }
 
 

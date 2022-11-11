@@ -13,11 +13,10 @@ import java.util.List;
 
 
 public interface IEtapaService extends IBaseService<EtapaDTO, EtapaResult> {
-    public abstract ResponseEntity<EtapaDTO> update(Integer id, EtapaDTO dto);
+    public abstract EtapaDTO update(Integer id, EtapaDTO dto);
 
-    public abstract ResponseEntity<Boolean> delete(Integer id);
+    public abstract Boolean delete(Integer id);
 
-    public abstract ResponseEntity<Integer> deleteAbs(Integer id);
+    public abstract Integer deleteAbs(Integer id);
 
-    public EtapaDTO getByID(Integer id) throws Exception;
 }

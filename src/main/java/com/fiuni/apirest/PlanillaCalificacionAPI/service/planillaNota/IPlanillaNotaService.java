@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 
 public interface IPlanillaNotaService extends IBaseService<PlanillaNotaDto, PlanillaNotaResult> {
 
-    public abstract ResponseEntity<PlanillaNotaDto> update(Integer id, PlanillaNotaDto dto);
+    public abstract PlanillaNotaDto update(Integer id, PlanillaNotaDto dto);
 
-    public abstract ResponseEntity<Boolean> delete(Integer id);
+    public abstract Boolean delete(Integer id);
 
-    public abstract ResponseEntity<PlanillaNotaTableableDTO> findByIdListaMateria(Integer id);
+    public abstract PlanillaNotaTableableDTO findByIdListaMateria(Integer id);
 }
         

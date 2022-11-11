@@ -49,30 +49,35 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
     }
 
     @Override
-    public ResponseEntity<ListaMateriaDTO> save(ListaMateriaDTO dto) {
+    public ListaMateriaDTO save(ListaMateriaDTO dto) {
         ListaMateriaDTO response = convertDomainToDto(listaMateriaDao.save(convertDtoToDomain(dto)));
-        return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        return response;
+        //return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.CREATED) : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @Override
-    public ResponseEntity<ListaMateriaDTO> getById(Integer id) {
+    public ListaMateriaDTO getById(Integer id) {
         ListaMateriaDTO response = convertDomainToDto(listaMateriaDao.findById(id).orElse(null));
 
-        return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.NOT_FOUND);
+        return response;
+
+        /*return response != null ? new ResponseEntity<ListaMateriaDTO>(response, HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.NOT_FOUND);*/
     }
 
     @Override
-    public ResponseEntity<ListaMateriaResult> getAll(Pageable pageable) {
+    public ListaMateriaResult getAll(Pageable pageable) {
         ListaMateriaResult response = new ListaMateriaResult(listaMateriaDao.findAll(pageable).map(p -> convertDomainToDto(p)).toList());
 
-        return response != null ? new ResponseEntity<ListaMateriaResult>(response, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return response;
+        /*return response != null ? new ResponseEntity<ListaMateriaResult>(response, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);*/
     }
 
     @Override
     @Transactional
-    public ResponseEntity<ListaMateriaDTO> update(Integer id, ListaMateriaDTO dto) {
+    public ListaMateriaDTO update(Integer id, ListaMateriaDTO dto) {
         if (dto.getEstado() != null && dto.getIdMateria() != null && dto.getIdClase() != null && dto.getIdProfesor() != null) {
             ListaMateriaDTO response = listaMateriaDao.findById(id).map(domain -> {
                 domain.setEstado(dto.getEstado());
@@ -81,17 +86,21 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
                 domain.setIdProfesor(dto.getIdProfesor());
                 dto.setId(domain.getId());
                 return save(dto);
-            }).orElse(null).getBody();
-            return response != null ? new ResponseEntity<ListaMateriaDTO>(HttpStatus.NO_CONTENT) : new ResponseEntity<ListaMateriaDTO>(HttpStatus.CONFLICT);
+            }).orElse(null);
+            return response;
+            //return response != null ? new ResponseEntity<ListaMateriaDTO>(HttpStatus.NO_CONTENT) : new ResponseEntity<ListaMateriaDTO>(HttpStatus.CONFLICT);
 
         }
-        return new ResponseEntity<ListaMateriaDTO>(HttpStatus.BAD_REQUEST);
+        return null;
+        //return new ResponseEntity<ListaMateriaDTO>(HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    public ResponseEntity<Boolean> delete(Integer id) {
+    public Boolean delete(Integer id) {
         Boolean response = listaMateriaDao.delete(id);
-        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+
+        return response;
+        //return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
 }

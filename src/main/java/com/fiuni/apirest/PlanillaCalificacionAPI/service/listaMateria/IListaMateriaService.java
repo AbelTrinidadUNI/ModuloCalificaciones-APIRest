@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface IListaMateriaService extends IBaseService<ListaMateriaDTO, ListaMateriaResult> {
 
-    public abstract ResponseEntity<ListaMateriaDTO> update(Integer id, ListaMateriaDTO dto);
+    public abstract ListaMateriaDTO update(Integer id, ListaMateriaDTO dto);
 
-    public abstract ResponseEntity<Boolean> delete(Integer id);
+    public abstract Boolean delete(Integer id);
 
     //public abstract ResponseEntity<ListaMateriaConAlumnosDTO> getFullById(Integer id);
 }

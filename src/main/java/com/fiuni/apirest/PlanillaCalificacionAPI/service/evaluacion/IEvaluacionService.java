@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface IEvaluacionService extends IBaseService<EvaluacionDTO, EvaluacionResult> {
 
-    public abstract ResponseEntity<EvaluacionDTO> update(Integer id, EvaluacionDTO dto);
+    public abstract EvaluacionDTO update(Integer id, EvaluacionDTO dto);
 
-    public abstract ResponseEntity<Boolean> delete(Integer id);
+    public abstract Boolean delete(Integer id);
 }

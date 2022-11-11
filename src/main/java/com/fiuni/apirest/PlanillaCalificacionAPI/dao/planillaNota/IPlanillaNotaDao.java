@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface IPlanillaNotaDao extends CrudRepository<PlanillaNotaDomain, Integer> {
     public Page<PlanillaNotaDomain> findAll(Pageable pageable);
 
+    public Page<PlanillaNotaDomain> getByEstadoTrue(Pageable pageable);
+
     @Query(value = "UPDATE PlanillaNotaDomain SET estado = 0 WHERE id = ?1")
     public Boolean delete(Integer id);
 

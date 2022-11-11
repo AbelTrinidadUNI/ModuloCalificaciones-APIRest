@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 
 
 public interface IBaseService<DTO extends BaseDTO, R extends BaseResult<DTO>> {
-    public ResponseEntity<DTO> save(DTO dto) throws Exception;
+    public DTO save(DTO dto) throws Exception;
 
-    public ResponseEntity<DTO> getById(Integer id) throws Exception;
+    public DTO getById(Integer id) throws Exception;
 
 
 
-    public ResponseEntity<R> getAll(Pageable pageable) throws Exception;
+    public R getAll(Pageable pageable) throws Exception;
 
 }

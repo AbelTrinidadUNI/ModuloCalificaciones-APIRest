@@ -33,88 +33,22 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
     @Override
     @Transactional
-    public ResponseEntity<EtapaDTO> save(EtapaDTO dto) {
+    public EtapaDTO save(EtapaDTO dto) {
         dto.setEstado(dto.getEstado() == null ? true : dto.getEstado());
         EtapaDomain domain = etapaDao.save(convertDtoToDomain(dto));
         EtapaDTO response = convertDomainToDto(domain);
         if(dto.getId() == null){
-            cacheManager.getCache(Settings.CACHE_NAME).put("API_ETAPA_" + response.getId(), domain);
+            cacheManager.getCache(Settings.CACHE_NAME).put("API_ETAPA_" + response.getId(), response);
         }
-        return response != null ? new ResponseEntity<EtapaDTO>(response, HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        return response;
     }
 
 
     @Override
     @Transactional
     @Cacheable(value = Settings.CACHE_NAME, key="'API_ETAPA_' + #id")
-    public ResponseEntity<EtapaDTO> getById(Integer id) {
-        Optional<EtapaDomain> etapaDomainOp = etapaDao.findById(id);
-        EtapaDTO response = etapaDomainOp.map(etapa -> {
-            return convertDomainToDto(etapa);
-        }).orElse(null);
-
-        return response != null ? new ResponseEntity(response, HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.NOT_FOUND);
-    }
-
-
-    @Override
-    @Transactional
-    public ResponseEntity<EtapaResult> getAll(Pageable pageable) {
-        EtapaResult result = new EtapaResult(etapaDao.findAll(pageable).map(etapa -> {
-            EtapaDTO dto = convertDomainToDto(etapa);
-            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_ETAPA_" + dto.getId(), dto);
-            return dto;
-
-        }).toList());
-
-        return result != null ? new ResponseEntity<EtapaResult>(result, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<EtapaDTO> update(Integer id, EtapaDTO dto) {
-
-        if (dto.getEstado() != null && dto.getDescripcion() != null) {
-            EtapaDTO etapaActualizada = etapaDao.findById(id).map(etapaDomain -> {
-                etapaDomain.setDescripcion(dto.getDescripcion());
-                etapaDomain.setEstado(dto.getEstado());
-                dto.setId(etapaDomain.getId());
-                return save(dto);
-            }).orElse(null).getBody();
-            return etapaActualizada != null ? new ResponseEntity<EtapaDTO>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<EtapaDTO>(HttpStatus.BAD_REQUEST);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Boolean> delete(Integer id) {
-        Boolean response = etapaDao.findById(id).map(etapaDomain -> {
-            EtapaDTO dto = convertDomainToDto(etapaDomain);
-            if (dto.getEstado()) {
-                dto.setEstado(false);
-                save(dto);
-                return true;
-            } else {
-                return false;
-            }
-        }).orElse(null);
-        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Integer> deleteAbs(Integer id) {
-        Integer response = etapaDao.deleteAbsolut(id);
-        return new ResponseEntity<Integer>(response, response > 0 ? HttpStatus.OK : HttpStatus.METHOD_NOT_ALLOWED);//ResponseEntity.etapaDao.deleteAbsolut(id);
-    }
-
-    @Override
-    @Cacheable(value = Settings.CACHE_NAME, key="'API_ETAPA_' + #id")
-    public EtapaDTO getByID(Integer id) throws Exception {
+    public EtapaDTO getById(Integer id) {
         Optional<EtapaDomain> etapaDomainOp = etapaDao.findById(id);
         EtapaDTO response = etapaDomainOp.map(etapa -> {
             return convertDomainToDto(etapa);
@@ -122,6 +56,82 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
         return response;
     }
+
+
+    @Override
+    @Transactional
+    public EtapaResult getAll(Pageable pageable) {
+        /*EtapaResult result = new EtapaResult(etapaDao.findAll(pageable).map(etapa -> {
+            EtapaDTO dto = convertDomainToDto(etapa);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_ETAPA_" + dto.getId(), dto);
+            return dto;
+
+        }).toList());
+        */
+        EtapaResult result = new EtapaResult(etapaDao.getByEstadoTrue(pageable).map(etapa -> {
+            EtapaDTO dto = convertDomainToDto(etapa);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_ETAPA_" + dto.getId(), dto);
+            return dto;
+
+        }).toList());
+
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public EtapaDTO update(Integer id, EtapaDTO dto) {
+
+        if (dto.getEstado() != null && dto.getDescripcion() != null) {
+            EtapaDTO etapaActualizada = etapaDao.findById(id).map(etapaDomain -> {
+                etapaDomain.setDescripcion(dto.getDescripcion());
+                etapaDomain.setEstado(dto.getEstado());
+                dto.setId(etapaDomain.getId());
+                cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_ETAPA_" + id);
+                return save(dto);
+            }).orElse(null);
+
+            if(etapaActualizada != null){
+                cacheManager.getCache(Settings.CACHE_NAME).put("API_ETAPA_" + etapaActualizada.getId(), etapaActualizada);
+            }
+            return etapaActualizada;
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Boolean delete(Integer id) {
+        Boolean response = etapaDao.findById(id).map(etapaDomain -> {
+            EtapaDTO dto = convertDomainToDto(etapaDomain);
+            if (dto.getEstado()) {
+                dto.setEstado(false);
+                EtapaDTO respuesta = save(dto);
+                if(respuesta != null){
+                    cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_ETAPA_" + id);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }).orElse(null);
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public Integer deleteAbs(Integer id) {
+        Integer response = etapaDao.deleteAbsolut(id);
+
+
+        if(response != null && response > 0){
+            cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_ETAPA_" + id);
+        }
+        return response;
+    }
+
+
 
 
     @Override

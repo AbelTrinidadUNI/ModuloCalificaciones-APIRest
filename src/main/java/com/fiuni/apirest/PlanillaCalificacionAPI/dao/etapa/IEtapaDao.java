@@ -19,6 +19,8 @@ import javax.transaction.Transactional;
 public interface IEtapaDao extends JpaRepository<EtapaDomain, Integer> {
     public Page<EtapaDomain> findAll(Pageable pageable);
 
+    public Page<EtapaDomain> getByEstadoTrue(Pageable pageable);
+
     //@Query("DELETE FROM EtapaDomain e JOIN EvaluacionDomain ev ON  e.id = ev.id")
     //@EntityGraph(attributePaths = {"evaluaciones"})
     /*@Query(value = "DELETE FROM etapas et " +

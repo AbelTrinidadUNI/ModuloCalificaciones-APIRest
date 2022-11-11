@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface IEvaluacionDao extends CrudRepository<EvaluacionDomain, Integer> {
     public Page<EvaluacionDomain> findAll(Pageable pageable);
 
+    public Page<EvaluacionDomain> getByEstadoTrue(Pageable pageable);
+
 }
 

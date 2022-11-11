@@ -8,11 +8,14 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNo
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionConEtapaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
+import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
 import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import com.library.domainLibrary.domain.planillaNota.PlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,36 +28,55 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
 
     @Autowired
     private IDetallePNDao detalle;
+
+    @Autowired
+    private CacheManager cacheManager;
+
     private DetallePlanillaNotaDomain detallePlanillaNotaDomain;
 
     @Override
     @Transactional
-    public ResponseEntity<DetallePlanillaNotaDTO> save(DetallePlanillaNotaDTO dto) {
+    public DetallePlanillaNotaDTO save(DetallePlanillaNotaDTO dto) {
         dto.setEstado(dto.getEstado() == null ? true : dto.getEstado());
         DetallePlanillaNotaDTO response = convertDomainToDto(detalle.save(convertDtoToDomain(dto)));
-        return response != null ? new ResponseEntity<DetallePlanillaNotaDTO>(response, HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        if (dto.getId() == null) {
+            cacheManager.getCache(Settings.CACHE_NAME).put("API_DETALLES_PN_" + response.getId(), response);
+        }
+        return response;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<DetallePlanillaNotaDTO> getById(Integer id) {
+    @Cacheable(value = Settings.CACHE_NAME, key = "'API_DETALLES_PN_' + #id")
+    public DetallePlanillaNotaDTO getById(Integer id) {
         DetallePlanillaNotaDTO response = detalle.findById(id).map(d -> convertDomainToDto(d)).orElse(null);
-        return response != null ? new ResponseEntity(response, HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.NOT_FOUND);
+        return response;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<DetallePlanillaNotaResult> getAll(Pageable pageable) {
-        DetallePlanillaNotaResult result = new DetallePlanillaNotaResult(detalle.findAll(pageable).map(d -> convertDomainToDto(d)).toList());
-        return result != null ? new ResponseEntity<DetallePlanillaNotaResult>(result, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public DetallePlanillaNotaResult getAll(Pageable pageable) {
+        /*DetallePlanillaNotaResult result = new DetallePlanillaNotaResult(detalle.findAll(pageable).map(d -> {
+            DetallePlanillaNotaDTO dto = convertDomainToDto(d);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_DETALLES_PN_" + dto.getId(), dto);
+            return dto;
+        }).toList());
+        */
+
+        DetallePlanillaNotaResult result = new DetallePlanillaNotaResult(detalle.getByEstadoTrue(pageable).map(d -> {
+            DetallePlanillaNotaDTO dto = convertDomainToDto(d);
+            cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_DETALLES_PN_" + dto.getId(), dto);
+            return dto;
+        }).toList());
+
+
+        return result;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<DetallePlanillaNotaDTO> update(Integer id, DetallePlanillaNotaDTO dto) {
+    public DetallePlanillaNotaDTO update(Integer id, DetallePlanillaNotaDTO dto) {
         if (dto != null && dto.getEstado() != null && dto.getObservacion() != null && dto.getPuntaje() != null
                 && dto.getIdEvaluacion() != null && dto.getIdEvaluacion() > 0
                 && dto.getIdPlanillaNota() != null && dto.getIdPlanillaNota() > 0
@@ -69,21 +91,30 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
                 d.setPuntaje(dto.getPuntaje());
 
                 dto.setId(d.getId());
-                return save(dto);
-            }).orElse(null).getBody();
-            return result != null ? new ResponseEntity<DetallePlanillaNotaDTO>(result, HttpStatus.NO_CONTENT) :
-                    new ResponseEntity<>(result, HttpStatus.CONFLICT);
 
+                cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_DETALLES_PN_" + id);
+
+                return save(dto);
+            }).orElse(null);
+
+            if(result != null){
+                cacheManager.getCache(Settings.CACHE_NAME).put("API_DETALLES_PN_" + result.getId(), result);
+            }
+
+            return result;
         }
-        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+        return null;
 
     }
 
     @Override
-    public ResponseEntity<Boolean> delete(Integer id) {
+    public Boolean delete(Integer id) {
         Boolean response = detalle.delete(id);
 
-        return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        if(response != null && response){
+            cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_DETALLES_PN_" + id);
+        }
+        return response;
 
     }
 
