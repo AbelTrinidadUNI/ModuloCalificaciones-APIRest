@@ -37,6 +37,7 @@ public class EtapaController {
 		//return etapaService.getById(id);
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping(path = "/page/{page_num}")
 	public ResponseEntity<EtapaResult> getEtapasPage(@PathVariable(value = "page_num")Integer pageNum) throws Exception{
 		EtapaResult result = etapaService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));

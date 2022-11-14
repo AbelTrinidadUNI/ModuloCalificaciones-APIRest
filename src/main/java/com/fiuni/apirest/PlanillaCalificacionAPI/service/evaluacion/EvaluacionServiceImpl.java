@@ -12,6 +12,7 @@ import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,13 +61,14 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                     return dto;
                 }).toList());
         */
-
-        EvaluacionResult response = new EvaluacionResult(evaluacionDao.getByEstadoTrue(pageable).map(evaluacion -> {
+        Page<EvaluacionDomain> page = evaluacionDao.getByEstadoTrue(pageable);
+        EvaluacionResult response = new EvaluacionResult(page.map(evaluacion -> {
             EvaluacionDTO dto = convertDomainToDto(evaluacion);
             cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_EVALUACION_" + dto.getId(), dto);
             return dto;
         }).toList());
 
+        response.setTotalPages(page.getTotalPages());
         return response;
     }
 

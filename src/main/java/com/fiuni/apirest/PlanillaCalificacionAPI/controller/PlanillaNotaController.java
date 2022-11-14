@@ -4,6 +4,8 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTablaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTableableDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.planillaNota.IPlanillaNotaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,15 @@ public class PlanillaNotaController {
         return response != null ? new ResponseEntity<PlanillaNotaDto>(response, HttpStatus.OK)
                 : new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping("/listaMaterias/{id}")
+    public ResponseEntity<PlanillaNotaTablaDTO> getByIdListaMaterias(@PathVariable(value = "id") Integer idListaMaterias) throws Exception{
+        PlanillaNotaTablaDTO response = planillaNotaService.findByIdListaMateria(idListaMaterias);
+
+        return response != null ? new ResponseEntity<PlanillaNotaTablaDTO>(response, HttpStatus.OK)
+                : new ResponseEntity(response, HttpStatus.NOT_FOUND);
+    }
+
 
     @GetMapping(path = "/page/{page_num}")
     public ResponseEntity<PlanillaNotaResult> getForPage(@PathVariable(value = "page_num")Integer pageNum) throws Exception{

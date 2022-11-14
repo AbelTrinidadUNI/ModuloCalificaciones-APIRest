@@ -5,8 +5,10 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.planillaNota.IPlanillaNotaDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaConEvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaTablaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTablaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTableableDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.DetallePlanillaNotaServiceImpl;
@@ -106,6 +108,7 @@ public class PlanillaNotaServiceImpl extends BaseServiceImpl<PlanillaNotaDto, Pl
                             }
                     ).toList());
 
+            response.setTotalPages(page.getTotalPages());
 
             return response != null && response.getTotal() > 0 ? response
                     : null;
@@ -172,28 +175,66 @@ public class PlanillaNotaServiceImpl extends BaseServiceImpl<PlanillaNotaDto, Pl
     }
 
     @Override
-    public PlanillaNotaTableableDTO findByIdListaMateria(Integer id) {
-        PlanillaNotaTableableDTO response = new PlanillaNotaTableableDTO();
+    public PlanillaNotaTablaDTO findByIdListaMateria(Integer id) {
+        try {
+            PlanillaNotaTablaDTO response = new PlanillaNotaTablaDTO();
 
-        PlanillaNotaDomain pn = pNotas.findFirstByIdListaMateria(id);
+            PlanillaNotaDomain pn = pNotas.findFirstByIdListaMateriaAndEstadoTrue(id);
+
+            if (pn == null){
+                System.out.println("PN es nulo");
+            }
 
 
-        DetallePlanillaNotaServiceImpl aux = new DetallePlanillaNotaServiceImpl();
+            response.setId(pn.getId());
+            response.setIdListaMateria(pn.getIdListaMateria());
+            response.setIdMateria(pn.getListaMateria().getIdMateria());
+            response.setIdCiclo(pn.getListaMateria().getClase().getIdCiclo());
+            response.setIdClase(pn.getListaMateria().getIdClase());
+            response.setIdColegio(pn.getListaMateria().getClase().getIdColegio());
+            response.setIdProfesor(pn.getListaMateria().getIdProfesor());
+            response.setAnhoClase(pn.getListaMateria().getClase().getAnho());
+            response.setDescripcionCiclo(pn.getListaMateria().getClase().getCiclo().getDescripcion());
+            response.setNombreClase(pn.getListaMateria().getClase().getNombre());
+            response.setNombreMateria(pn.getListaMateria().getMateria().getNombre());
+            response.setNombreColegio(pn.getListaMateria().getClase().getColegio().getNombreColegio());
+            response.setNombreProfesor(pn.getListaMateria().getProfesor().getNombre());
+            response.setTurnoClase(pn.getListaMateria().getClase().getTurno());
 
-        response.setId(pn.getId());
-        response.setNombreMateria(pn.getListaMateria().getMateria().getNombre());
-        response.setDescripcionClase(pn.getListaMateria().getClase().getNombre());
-        response.setIdListaMateria(pn.getIdListaMateria());
+            List<DetallePlanillaNotaTablaDTO> listaDetalles = new ArrayList();
+            for (int i = 0; i < pn.getDetallesPlanillaNotas().size(); i++) {
+                DetallePlanillaNotaDomain det = pn.getDetallesPlanillaNotas().get(i);
 
-        List<DetallePlanillaNotaConEvaluacionDTO> listaDetalles = new ArrayList();
-        for (int i = 0; i < pn.getDetallesPlanillaNotas().size(); i++) {
-            listaDetalles.add(aux.convertDomainToDto2(pn.getDetallesPlanillaNotas().get(i)));
-        }
-        response.setDetallesNotas(listaDetalles);
+                if (det.getEstado()) {
+                    DetallePlanillaNotaTablaDTO detalle = new DetallePlanillaNotaTablaDTO();
+                    detalle.setId(det.getId());
+                    detalle.setIdAlumno(det.getListaAlumno().getAlumno().getId());
+                    detalle.setIdListaAlumno(det.getIdListaAlumno());
+                    detalle.setIdEvaluacion(det.getIdEvaluacion());
+                    detalle.setIdEtapa(det.getEvaluacion().getIdEtapa());
+                    detalle.setDescripcionEtapa(det.getEvaluacion().getEtapa().getDescripcion());
+                    detalle.setPuntaje(det.getPuntaje());
+                    detalle.setObservacion(det.getObservacion());
+                    detalle.setDescripcionEvaluacion(det.getEvaluacion().getNombre());
+                    detalle.setNombreAlumno(det.getListaAlumno().getAlumno().getNombre());
+                    detalle.setDescripcionEtapa(det.getEvaluacion().getEtapa().getDescripcion());
+                    detalle.setTPEvaluacion(det.getEvaluacion().getTotalPunto());
 
-        return response;
+                    listaDetalles.add(detalle);
+                }
+            }
+            response.setDetalles(listaDetalles);
+
+            return response;
         /*return response != null ? new ResponseEntity<PlanillaNotaTableableDTO>(response, HttpStatus.OK)
                 : new ResponseEntity(HttpStatus.NOT_FOUND);*/
+        }catch(NullPointerException e){
+            System.out.println(e.getMessage());
+            return null;
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
 

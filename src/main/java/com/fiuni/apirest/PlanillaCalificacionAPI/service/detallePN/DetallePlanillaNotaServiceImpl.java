@@ -16,6 +16,7 @@ import com.library.domainLibrary.domain.planillaNota.PlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,15 +64,16 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
             return dto;
         }).toList());
         */
-
-        DetallePlanillaNotaResult result = new DetallePlanillaNotaResult(detalle.getByEstadoTrue(pageable).map(d -> {
+        Page<DetallePlanillaNotaDomain> page = detalle.getByEstadoTrue(pageable);
+        DetallePlanillaNotaResult response = new DetallePlanillaNotaResult(page.map(d -> {
             DetallePlanillaNotaDTO dto = convertDomainToDto(d);
             cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_DETALLES_PN_" + dto.getId(), dto);
             return dto;
         }).toList());
 
+        response.setTotalPages(page.getTotalPages());
 
-        return result;
+        return response;
     }
 
     @Override

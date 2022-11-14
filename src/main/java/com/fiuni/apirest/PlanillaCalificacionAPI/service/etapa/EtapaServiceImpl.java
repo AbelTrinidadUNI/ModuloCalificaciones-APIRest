@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,15 +69,19 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
         }).toList());
         */
-        EtapaResult result = new EtapaResult(etapaDao.getByEstadoTrue(pageable).map(etapa -> {
+        Page<EtapaDomain> page = etapaDao.getByEstadoTrue(pageable);
+
+        EtapaResult response = new EtapaResult(etapaDao.getByEstadoTrue(pageable).map(etapa -> {
             EtapaDTO dto = convertDomainToDto(etapa);
             cacheManager.getCache(Settings.CACHE_NAME).putIfAbsent("API_ETAPA_" + dto.getId(), dto);
             return dto;
 
         }).toList());
 
+        response.setTotalPages(page.getTotalPages());
 
-        return result;
+
+        return response;
     }
 
     @Override

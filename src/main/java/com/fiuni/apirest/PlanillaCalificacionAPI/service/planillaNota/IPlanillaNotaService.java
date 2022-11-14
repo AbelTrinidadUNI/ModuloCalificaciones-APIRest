@@ -1,10 +1,9 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.service.planillaNota;
 
 
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaTablaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.*;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTableableDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.IBaseService;
 import org.springframework.http.ResponseEntity;
 
@@ -14,6 +13,7 @@ public interface IPlanillaNotaService extends IBaseService<PlanillaNotaDto, Plan
 
     public abstract Boolean delete(Integer id);
 
-    public abstract PlanillaNotaTableableDTO findByIdListaMateria(Integer id);
+    public abstract PlanillaNotaTablaDTO findByIdListaMateria(Integer id);
+
 }
         

@@ -22,5 +22,6 @@ public interface IPlanillaNotaDao extends CrudRepository<PlanillaNotaDomain, Int
 
     public PlanillaNotaDomain findFirstByIdListaMateria(Integer idListaMateria);
 
+    public PlanillaNotaDomain findFirstByIdListaMateriaAndEstadoTrue(Integer idListaMateria);
     //public Integer
 }
