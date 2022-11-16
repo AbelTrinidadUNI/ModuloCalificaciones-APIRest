@@ -25,5 +25,8 @@ public interface IDetallePNDao extends CrudRepository<DetallePlanillaNotaDomain,
     @Query(value = "SELECT d FROM DetallePlanillaNotaDomain d WHERE d.idPlanillaNota = ?1")
     public List<DetallePlanillaNotaDomain> getAllByIdPlanillaNota(Integer idPN);
 
+    @Query(value = "SELECT DISTINCT(d.idListaAlumno) FROM DetallePlanillaNotaDomain d WHERE d.idPlanillaNota = ?1")
+    public List<Integer> getAllDistinctByIdPlanillaNota(Integer idPN);
+
 }
 

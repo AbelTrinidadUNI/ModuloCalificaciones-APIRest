@@ -1,12 +1,17 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion;
 
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.etapa.IEtapaDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.evaluacion.IEvaluacionDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionNuevaEnTablaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.IDetallePlanillaNotaService;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.IEtapaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, EvaluacionDomain, EvaluacionResult> implements IEvaluacionService {
     @Autowired(required = true)
@@ -29,6 +36,15 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private IDetallePNDao detallePNDao;
+
+    @Autowired
+    private IEtapaService etapaService;
+
+
+    @Autowired
+    private IDetallePlanillaNotaService detallePNService;
     @Override
     @Transactional
     public EvaluacionDTO save(EvaluacionDTO dto) {
@@ -116,6 +132,68 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
         }).orElse(false);
 
         return response;
+    }
+
+
+    @Override
+    @Transactional
+    public Boolean saveFromTable(EvaluacionNuevaEnTablaDTO dto) {
+        try {
+            Integer idPlanillaNotas = dto.getIdPlanillaNotas();
+            Integer idEtapa = dto.getIdEtapa();
+            Integer idEvaluacion = dto.getId();
+
+            List<Integer> alumnosIds = detallePNDao.getAllDistinctByIdPlanillaNota(idPlanillaNotas);
+
+
+            //verificar etapa si es necesario crear
+            if (idEtapa == null || (idEtapa <= 0)) {
+                EtapaDTO etapaDTO = new EtapaDTO();
+                etapaDTO.setDescripcion(dto.getDescripcionEtapa());
+                etapaDTO.setEstado(true);
+
+                EtapaDTO response = etapaService.save(etapaDTO);
+                idEtapa = response.getId();
+            }
+
+            //verificar y crear evaluacion
+            if(idEvaluacion == null || idEvaluacion <= 0){
+                EvaluacionDTO dtoEval = new EvaluacionDTO();
+                dtoEval.setIdEtapa(idEtapa);
+                dtoEval.setTotalPunto(dto.getTp());
+                dtoEval.setNombre(dto.getDescripcionEvaluacion());
+                dtoEval.setEstado(true);
+
+                EvaluacionDTO response = save(dtoEval);
+                idEvaluacion = response.getId();
+            }
+            //crear detalles
+            final Integer IdEvaluacionFinal = idEvaluacion;
+            alumnosIds.forEach(d -> {
+                Integer idListaAlumno = d;
+
+                DetallePlanillaNotaDTO dtoDetalle = new DetallePlanillaNotaDTO();
+
+                dtoDetalle.setIdEvaluacion(IdEvaluacionFinal);
+                dtoDetalle.setPuntaje(0d);
+                //dtoDetalle.setObservacion("");
+                dtoDetalle.setIdListaAlumno(idListaAlumno);
+                dtoDetalle.setIdPlanillaNota(dto.getIdPlanillaNotas());
+                dtoDetalle.setEstado(true);
+                try {
+                    detallePNService.save(dtoDetalle);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            System.out.println("Imprimio los alumnos");
+
+            return true;
+        }catch (Exception e){
+
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
 

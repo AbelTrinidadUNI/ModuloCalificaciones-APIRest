@@ -1,10 +1,14 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
 
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.evaluacion.IEvaluacionDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionNuevaEnTablaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion.IEvaluacionService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
+import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -12,11 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/evaluaciones")
 public class EvaluacionController {
     @Autowired(required = true)
     private IEvaluacionService evaluacionService;
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<EvaluacionDTO> getById(@PathVariable(value = "id") Integer cityId) throws Exception {
@@ -40,6 +48,18 @@ public class EvaluacionController {
         EvaluacionDTO response = evaluacionService.save(evaluacion);
 
         return response != null ? new ResponseEntity<EvaluacionDTO>(response, HttpStatus.CREATED)
+                : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+
+    /*
+    guarda una evaluacion y si la etapa recibida no existe se crea y se le asoci y luego se crean los
+    detalles de la planilla para esa evaluacion
+    */
+    @PostMapping("/fromTable")
+    public ResponseEntity<Boolean> saveEvaluacion(@Validated @RequestBody EvaluacionNuevaEnTablaDTO evaluacion) throws Exception {
+        Boolean response = evaluacionService.saveFromTable(evaluacion);
+        return response != null ? new ResponseEntity<Boolean>(response, HttpStatus.CREATED)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
