@@ -1,17 +1,14 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTablaDTO;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTableableDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.*;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.planillaNota.IPlanillaNotaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +54,20 @@ public class PlanillaNotaController {
         PlanillaNotaDto response = planillaNotaService.update(id, dto);
         return response != null ? new ResponseEntity<PlanillaNotaDto>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+
+
+
+    @PutMapping("/updTabla")
+    public ResponseEntity<Boolean> putPuntajeAndEstado(@RequestBody PlanillaNotaUpdNotasAndEstadoDTO dto) {
+        try {
+            return planillaNotaService.updatePuntajeAndEstado(dto)
+                    ? new ResponseEntity<Boolean>(HttpStatus.NO_CONTENT)
+                    : new ResponseEntity<>(HttpStatus.CONFLICT);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -45,11 +45,12 @@ public class DetallesPlanillaNotaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DetallePlanillaNotaDTO> putEtapa(@PathVariable(value = "id") Integer id, @RequestBody DetallePlanillaNotaDTO dto) {
+    public ResponseEntity<DetallePlanillaNotaDTO> put(@PathVariable(value = "id") Integer id, @RequestBody DetallePlanillaNotaDTO dto) {
         DetallePlanillaNotaDTO response = detallePlanillaNotaService.update(id, dto);
         return response != null ? new ResponseEntity<DetallePlanillaNotaDTO>(response, HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable(value = "id") Integer id) {

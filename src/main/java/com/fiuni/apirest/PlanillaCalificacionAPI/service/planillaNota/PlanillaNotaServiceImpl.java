@@ -6,10 +6,7 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dao.planillaNota.IPlanillaNotaD
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaConEvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaTablaDTO;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTablaDTO;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaTableableDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.*;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.DetallePlanillaNotaServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
@@ -235,6 +232,21 @@ public class PlanillaNotaServiceImpl extends BaseServiceImpl<PlanillaNotaDto, Pl
             System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    @Transactional
+    public Boolean updatePuntajeAndEstado(PlanillaNotaUpdNotasAndEstadoDTO dto) {
+            try{
+                dto.getDetalles().forEach(d -> {
+                    //System.out.println("id: " + d.getId() + " puntaje: " + d.getPuntaje() + " estado: " + d.getEstado());
+                    detallesDao.updatePuntajeAndEstado(d.getPuntaje(), d.getEstado(), d.getId());
+                });
+                return true;
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
     }
 
 
