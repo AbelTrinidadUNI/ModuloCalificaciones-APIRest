@@ -14,5 +14,6 @@ public interface IEvaluacionDao extends CrudRepository<EvaluacionDomain, Integer
 
     public Page<EvaluacionDomain> getByEstadoTrue(Pageable pageable);
 
+
 }
 

@@ -21,6 +21,7 @@ public class DetallesPlanillaNotaController {
     @Autowired(required = true)
     private IDetallePlanillaNotaService detallePlanillaNotaService;
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
     public ResponseEntity<DetallePlanillaNotaDTO> getById(@PathVariable(value = "id") Integer planillaId) throws Exception{
         DetallePlanillaNotaDTO response = detallePlanillaNotaService.getById(planillaId);
@@ -29,6 +30,7 @@ public class DetallesPlanillaNotaController {
                 : new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping(path = "/page/{page_num}")
     public ResponseEntity<DetallePlanillaNotaResult> getPlanillaNota(@PathVariable(value = "page_num")Integer pageNum) throws Exception{
         DetallePlanillaNotaResult response = detallePlanillaNotaService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));
@@ -36,6 +38,7 @@ public class DetallesPlanillaNotaController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping
     public ResponseEntity<DetallePlanillaNotaDTO> save(@Validated @RequestBody DetallePlanillaNotaDTO planilla) throws Exception{
         DetallePlanillaNotaDTO response = detallePlanillaNotaService.save(planilla);
@@ -44,6 +47,7 @@ public class DetallesPlanillaNotaController {
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("/{id}")
     public ResponseEntity<DetallePlanillaNotaDTO> put(@PathVariable(value = "id") Integer id, @RequestBody DetallePlanillaNotaDTO dto) {
         DetallePlanillaNotaDTO response = detallePlanillaNotaService.update(id, dto);
@@ -51,7 +55,7 @@ public class DetallesPlanillaNotaController {
                 new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-
+    @CrossOrigin(origins = "*")
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable(value = "id") Integer id) {
         Boolean response = detallePlanillaNotaService.delete(id);

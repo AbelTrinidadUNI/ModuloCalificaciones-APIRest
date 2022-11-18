@@ -7,8 +7,8 @@ import com.library.domainLibrary.domain.base.BaseDomain;
 
 public abstract class BaseServiceImpl<DTO extends BaseDTO, DOMAIN extends BaseDomain,  RESULT extends BaseResult<DTO>> implements IBaseService<DTO,   RESULT> {
 
-	protected abstract DTO convertDomainToDto(DOMAIN domain);
+	public abstract DTO convertDomainToDto(DOMAIN domain);
 
-	protected abstract DOMAIN convertDtoToDomain(DTO dto);
+	public abstract DOMAIN convertDtoToDomain(DTO dto);
 
 }

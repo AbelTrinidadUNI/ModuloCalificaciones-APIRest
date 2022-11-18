@@ -251,7 +251,7 @@ public class PlanillaNotaServiceImpl extends BaseServiceImpl<PlanillaNotaDto, Pl
 
 
     @Override
-    protected PlanillaNotaDto convertDomainToDto(PlanillaNotaDomain domain) {
+    public PlanillaNotaDto convertDomainToDto(PlanillaNotaDomain domain) {
         PlanillaNotaDto dto = new PlanillaNotaDto();
         dto.setId(domain.getId());
         dto.setEstado(domain.getEstado());
@@ -279,7 +279,7 @@ public class PlanillaNotaServiceImpl extends BaseServiceImpl<PlanillaNotaDto, Pl
     }
 
     @Override
-    protected PlanillaNotaDomain convertDtoToDomain(PlanillaNotaDto dto) {
+    public PlanillaNotaDomain convertDtoToDomain(PlanillaNotaDto dto) {
         PlanillaNotaDomain domain = new PlanillaNotaDomain();
         domain.setId(dto.getId());
         domain.setIdListaMateria(dto.getIdListaMateria());

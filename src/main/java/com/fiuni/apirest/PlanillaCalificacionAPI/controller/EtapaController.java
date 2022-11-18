@@ -46,6 +46,7 @@ public class EtapaController {
 				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
+	@CrossOrigin(origins = "*")
 	@PostMapping
 	public ResponseEntity<EtapaDTO> save(@Validated @RequestBody EtapaDTO etapa) throws Exception {
 		EtapaDTO response = etapaService.save(etapa);
@@ -54,6 +55,7 @@ public class EtapaController {
 				: new ResponseEntity<>(HttpStatus.CONFLICT);
 	}
 
+	@CrossOrigin(origins = "*")
 	@PutMapping("/{id}")
 	public ResponseEntity<EtapaDTO> putEtapa(@PathVariable(value = "id") Integer id, @RequestBody EtapaDTO dto) {
 		EtapaDTO response = etapaService.update(id, dto);
@@ -61,6 +63,7 @@ public class EtapaController {
 		return response != null ? new ResponseEntity<EtapaDTO>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.CONFLICT);
 	}
 
+	@CrossOrigin(origins = "*")
 	@DeleteMapping("eliminar/{id}")
 	public ResponseEntity<Boolean> deleteEtapa(@PathVariable(value = "id") Integer id) {
 		Boolean response = etapaService.delete(id);
@@ -68,6 +71,7 @@ public class EtapaController {
 		return new ResponseEntity<Boolean>(response != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}
 
+	@CrossOrigin(origins = "*")
 	@DeleteMapping("/absolute/{id}")
 	public ResponseEntity<Integer> deleteAbsEtapa(@PathVariable(value = "id") Integer id){
 		Integer response = etapaService.deleteAbs(id);

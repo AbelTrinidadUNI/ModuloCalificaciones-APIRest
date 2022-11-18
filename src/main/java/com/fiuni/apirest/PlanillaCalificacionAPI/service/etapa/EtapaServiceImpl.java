@@ -5,6 +5,8 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dao.etapa.IEtapaDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.IDetallePlanillaNotaService;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion.IEvaluacionService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,13 +27,17 @@ import java.util.Optional;
 
 @Service
 public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, EtapaResult> implements IEtapaService {
-    @Autowired
+    @Autowired(required = true)
     private IEtapaDao etapaDao;
 
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private IEvaluacionService evaluacionService;
 
+    //@Autowired
+    //private IDetallePlanillaNotaService detNotasService;
 
     @Override
     @Transactional
@@ -105,6 +112,7 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
         return null;
     }
 
+
     @Override
     @Transactional
     public Boolean delete(Integer id) {
@@ -116,6 +124,10 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
                 if(respuesta != null){
                     cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_ETAPA_" + id);
                 }
+                //se ocultan las evaluaciones asociadas a la etapa
+                etapaDomain.getEvaluaciones().forEach(evaluacion -> {
+                    evaluacionService.delete(evaluacion.getId());
+                });
                 return true;
             } else {
                 return false;
@@ -140,7 +152,7 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
 
 
     @Override
-    protected EtapaDTO convertDomainToDto(EtapaDomain domain) {
+    public EtapaDTO convertDomainToDto(EtapaDomain domain) {
         EtapaDTO dto = new EtapaDTO();
         dto.setId(domain.getId());
         dto.setDescripcion(domain.getDescripcion());
@@ -149,7 +161,7 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
     }
 
     @Override
-    protected EtapaDomain convertDtoToDomain(EtapaDTO dto) {
+    public EtapaDomain convertDtoToDomain(EtapaDTO dto) {
         EtapaDomain dom = new EtapaDomain();
         dom.setId(dto.getId());
         dom.setDescripcion(dto.getDescripcion());

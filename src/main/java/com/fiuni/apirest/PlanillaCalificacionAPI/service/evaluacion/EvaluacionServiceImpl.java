@@ -11,8 +11,10 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionNuevaE
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.IDetallePlanillaNotaService;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.EtapaServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.IEtapaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
+import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -39,12 +41,13 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     @Autowired
     private IDetallePNDao detallePNDao;
 
-    @Autowired
-    private IEtapaService etapaService;
+    //@Autowired
+    //private IEtapaService etapaService;
 
 
     @Autowired
     private IDetallePlanillaNotaService detallePNService;
+
     @Override
     @Transactional
     public EvaluacionDTO save(EvaluacionDTO dto) {
@@ -125,6 +128,11 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                 if(dto != null){
                     cacheManager.getCache(Settings.CACHE_NAME).evictIfPresent("API_EVALUACION_" + id);
                 }
+                //se ocultan los detalles de la planilla a la cual esta asociada la evaluacion
+                /*evaluacionDomain.getDetallesPlanillaNotas().forEach(detNotas -> {
+                    detallePNService.delete(detNotas.getId());
+                });*/
+                detallePNDao.hiddenByIdEvaluacion(evaluacionDomain.getId());
                 return true;
             } else {
                 return false;
@@ -152,14 +160,19 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                 etapaDTO.setDescripcion(dto.getDescripcionEtapa());
                 etapaDTO.setEstado(true);
 
-                EtapaDTO response = etapaService.save(etapaDTO);
-                idEtapa = response.getId();
+                EtapaServiceImpl etapaServ = new EtapaServiceImpl();
+                EtapaDomain dom = etapaServ.convertDtoToDomain(etapaDTO);
+                EtapaDomain response = etapaDao.save(dom);
+                //if(response != null && response.getId() > 0) {
+                    idEtapa = response.getId();
+                    dto.setIdEtapa(response.getId());
+                    //}
             }
 
             //verificar y crear evaluacion
             if(idEvaluacion == null || idEvaluacion <= 0){
                 EvaluacionDTO dtoEval = new EvaluacionDTO();
-                dtoEval.setIdEtapa(idEtapa);
+                dtoEval.setIdEtapa(dto.getIdEtapa());
                 dtoEval.setTotalPunto(dto.getTp());
                 dtoEval.setNombre(dto.getDescripcionEvaluacion());
                 dtoEval.setEstado(true);
@@ -167,9 +180,11 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                 EvaluacionDTO response = save(dtoEval);
                 idEvaluacion = response.getId();
             }
+
             //crear detalles
             final Integer IdEvaluacionFinal = idEvaluacion;
             alumnosIds.forEach(d -> {
+                System.out.println("id etapa: "+ dto.getIdEtapa());
                 Integer idListaAlumno = d;
 
                 DetallePlanillaNotaDTO dtoDetalle = new DetallePlanillaNotaDTO();
@@ -183,7 +198,8 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
                 try {
                     detallePNService.save(dtoDetalle);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    System.out.println("Error al guardar el detalle");
+                    //throw new RuntimeException(e);
                 }
             });
             System.out.println("Imprimio los alumnos");
@@ -191,14 +207,14 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
             return true;
         }catch (Exception e){
 
-            System.out.println(e.getMessage());
+            System.out.println("ERROR DESCONOCIDO:" + e.getMessage());
             return false;
         }
     }
 
 
     @Override
-    protected EvaluacionDTO convertDomainToDto(EvaluacionDomain domain) {
+    public EvaluacionDTO convertDomainToDto(EvaluacionDomain domain) {
         EvaluacionDTO dto = new EvaluacionDTO();
         dto.setId(domain.getId());
         dto.setEstado(domain.getEstado());
@@ -217,7 +233,7 @@ public class EvaluacionServiceImpl extends BaseServiceImpl<EvaluacionDTO, Evalua
     }
 
     @Override
-    protected EvaluacionDomain convertDtoToDomain(EvaluacionDTO dto) {
+    public EvaluacionDomain convertDtoToDomain(EvaluacionDTO dto) {
         EvaluacionDomain domain = new EvaluacionDomain();
         domain.setId(dto.getId());
         domain.setEstado(dto.getEstado());

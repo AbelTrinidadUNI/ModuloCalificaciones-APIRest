@@ -25,7 +25,7 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
     private IPlanillaNotaDao planillaNotaDao;
 
     @Override
-    protected ListaMateriaDTO convertDomainToDto(ListaMateriaDomain domain) {
+    public ListaMateriaDTO convertDomainToDto(ListaMateriaDomain domain) {
         ListaMateriaDTO dto = new ListaMateriaDTO();
 
         dto.setId(domain.getId());
@@ -38,7 +38,7 @@ public class ListaMateriaServiceImpl extends BaseServiceImpl<ListaMateriaDTO, Li
     }
 
     @Override
-    protected ListaMateriaDomain convertDtoToDomain(ListaMateriaDTO dto) {
+    public ListaMateriaDomain convertDtoToDomain(ListaMateriaDTO dto) {
         ListaMateriaDomain domain = new ListaMateriaDomain();
         domain.setId(dto.getId());
         domain.setEstado(dto.getEstado());

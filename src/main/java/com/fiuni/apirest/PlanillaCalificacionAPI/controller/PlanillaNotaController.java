@@ -18,6 +18,7 @@ public class PlanillaNotaController {
     @Autowired
     private IPlanillaNotaService planillaNotaService;
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/{id}")
     public ResponseEntity<PlanillaNotaDto> getById(@PathVariable(value = "id") Integer planillaId) throws Exception{
         PlanillaNotaDto response = planillaNotaService.getById(planillaId);
@@ -26,6 +27,7 @@ public class PlanillaNotaController {
                 : new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/listaMaterias/{id}")
     public ResponseEntity<PlanillaNotaTablaDTO> getByIdListaMaterias(@PathVariable(value = "id") Integer idListaMaterias) throws Exception{
         PlanillaNotaTablaDTO response = planillaNotaService.findByIdListaMateria(idListaMaterias);
@@ -34,7 +36,7 @@ public class PlanillaNotaController {
                 : new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
 
-
+    @CrossOrigin(origins = "*")
     @GetMapping(path = "/page/{page_num}")
     public ResponseEntity<PlanillaNotaResult> getForPage(@PathVariable(value = "page_num")Integer pageNum) throws Exception{
         PlanillaNotaResult response = planillaNotaService.getAll(PageRequest.of(pageNum, Settings.PAGE_SIZE));
@@ -42,6 +44,7 @@ public class PlanillaNotaController {
                 : new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping
     public ResponseEntity<PlanillaNotaDto> save(@Validated @RequestBody PlanillaNotaDto planilla) throws Exception{
         PlanillaNotaDto response = planillaNotaService.save(planilla);
@@ -49,6 +52,7 @@ public class PlanillaNotaController {
                 : new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping("/{id}")
     public ResponseEntity<PlanillaNotaDto> put(@PathVariable(value = "id") Integer id, @RequestBody PlanillaNotaDto dto) {
         PlanillaNotaDto response = planillaNotaService.update(id, dto);
@@ -57,7 +61,7 @@ public class PlanillaNotaController {
     }
 
 
-
+    @CrossOrigin(origins = "*")
     @PutMapping("/updTabla")
     public ResponseEntity<Boolean> putPuntajeAndEstado(@RequestBody PlanillaNotaUpdNotasAndEstadoDTO dto) {
         try {
@@ -70,6 +74,7 @@ public class PlanillaNotaController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable(value = "id") Integer id) {
         Boolean response = planillaNotaService.delete(id);

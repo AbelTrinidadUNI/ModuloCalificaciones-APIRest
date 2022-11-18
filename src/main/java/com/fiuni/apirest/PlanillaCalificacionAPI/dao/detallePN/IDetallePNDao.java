@@ -33,5 +33,9 @@ public interface IDetallePNDao extends CrudRepository<DetallePlanillaNotaDomain,
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE DetallePlanillaNotaDomain SET puntaje = ?1, estado = ?2 WHERE id = ?3")
     public Integer updatePuntajeAndEstado(Double puntajeNuevo, Boolean estadoNuevo, Integer id_dpn);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE DetallePlanillaNotaDomain SET estado = false WHERE idEvaluacion = ?1")
+    public Integer hiddenByIdEvaluacion(Integer idEval);
 }
 

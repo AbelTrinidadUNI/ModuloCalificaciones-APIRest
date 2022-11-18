@@ -122,7 +122,7 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
 
 
     @Override
-    protected DetallePlanillaNotaDTO convertDomainToDto(DetallePlanillaNotaDomain domain) {
+    public DetallePlanillaNotaDTO convertDomainToDto(DetallePlanillaNotaDomain domain) {
         DetallePlanillaNotaDTO dto = new DetallePlanillaNotaDTO();
         dto.setId(domain.getId());
         dto.setEstado(domain.getEstado());
@@ -136,7 +136,7 @@ public class DetallePlanillaNotaServiceImpl extends BaseServiceImpl<DetallePlani
     }
 
     @Override
-    protected DetallePlanillaNotaDomain convertDtoToDomain(DetallePlanillaNotaDTO dto) {
+    public DetallePlanillaNotaDomain convertDtoToDomain(DetallePlanillaNotaDTO dto) {
         DetallePlanillaNotaDomain domain = new DetallePlanillaNotaDomain();
         domain.setId(dto.getId());
         domain.setEstado(dto.getEstado());

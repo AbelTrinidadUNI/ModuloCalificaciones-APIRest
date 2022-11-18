@@ -32,6 +32,9 @@ public interface IEtapaDao extends JpaRepository<EtapaDomain, Integer> {
             "WHERE e.id = ?1) AS res) < 1 AND et.id = ?1")*/
     //@Query(value = "DELETE FROM EtapaDomain AS e WHERE (SELECT count(et.id) FROM EtapaDomain et INNER JOIN et.evaluaciones)< 1 AND e.id = ?1")
 
+    /*@Query(value = "UPDATE EvaluacionDomain ev EtapaDomain et SET ev.estado=1, et.estado = 0 WHERE ev.idEtapa = et.idEtapa AND et.idEtapa = ?1")
+    public Integer hiddenCascadeById(Integer id);
+*/
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM EtapaDomain ed WHERE ((SELECT count(ev.idEtapa) FROM EvaluacionDomain ev WHERE ev.idEtapa = ?1) < 1) AND ed.id = ?1")
