@@ -2,6 +2,7 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaListEvalDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.IBaseService;
 import org.apache.coyote.Response;
@@ -19,4 +20,6 @@ public interface IEtapaService extends IBaseService<EtapaDTO, EtapaResult> {
 
     public abstract Integer deleteAbs(Integer id);
 
+
+    public abstract Boolean saveAll(EtapaListEvalDTO dto);
 }

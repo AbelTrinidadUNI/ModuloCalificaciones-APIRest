@@ -40,4 +40,6 @@ public interface IEtapaDao extends JpaRepository<EtapaDomain, Integer> {
     @Query(value = "DELETE FROM EtapaDomain ed WHERE ((SELECT count(ev.idEtapa) FROM EvaluacionDomain ev WHERE ev.idEtapa = ?1) < 1) AND ed.id = ?1")
     public Integer deleteAbsolut(Integer id);
 
+
+
 }

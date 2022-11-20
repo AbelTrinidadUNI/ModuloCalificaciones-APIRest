@@ -2,7 +2,9 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaListEvalDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionEtapaListDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.IEtapaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import org.slf4j.*;
@@ -52,6 +54,18 @@ public class EtapaController {
 		EtapaDTO response = etapaService.save(etapa);
 
 		return response != null ? new ResponseEntity<EtapaDTO>(response, HttpStatus.CREATED)
+				: new ResponseEntity<>(HttpStatus.CONFLICT);
+	}
+
+
+	@CrossOrigin(origins = "*")
+	@PostMapping("/all")
+	public ResponseEntity<Boolean> saveAll(@Validated @RequestBody EtapaListEvalDTO etapa) throws Exception {
+		Boolean resp = etapaService.saveAll(etapa);
+		//EtapaListEvalDTO response = new EtapaListEvalDTO();
+		//EvaluacionEtapaListDTO eval = new EvaluacionEtapaListDTO();
+		//response.getEvalauciones().add(eval);
+		return resp != null && resp ? new ResponseEntity<Boolean>(resp, HttpStatus.CREATED)
 				: new ResponseEntity<>(HttpStatus.CONFLICT);
 	}
 

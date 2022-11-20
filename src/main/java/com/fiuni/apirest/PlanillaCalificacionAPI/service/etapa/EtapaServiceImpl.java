@@ -2,13 +2,17 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa;
 
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dao.etapa.IEtapaDao;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dao.evaluacion.IEvaluacionDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaDTO;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaListEvalDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.etapa.EtapaResult;
+import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionEtapaListDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.IDetallePlanillaNotaService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion.IEvaluacionService;
 import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
 import com.library.domainLibrary.domain.etapa.EtapaDomain;
+import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.cache.CacheManager;
@@ -21,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -148,7 +153,41 @@ public class EtapaServiceImpl extends BaseServiceImpl<EtapaDTO, EtapaDomain, Eta
         return response;
     }
 
+    @Autowired
+    private IEvaluacionDao evalDao;
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Override
+    public Boolean saveAll(EtapaListEvalDTO dto) {
+        //Mapear a un domain
+        final EtapaDomain domain = new EtapaDomain();
+        //domain.setId(dto.getId());
+        domain.setDescripcion(dto.getDescripcion());
+        domain.setEstado(dto.getEstado());
+        etapaDao.save(domain);
+
+        //domain.setEvaluaciones(new ArrayList<EvaluacionDomain>());
+        final List<EvaluacionDomain> evaluacionesDomains = new ArrayList<>();
+        for(EvaluacionEtapaListDTO dtoE : dto.getEvalauciones()) {
+            final EvaluacionDomain domainE = new EvaluacionDomain();
+
+            domainE.setNombre(dtoE.getNombre());
+            domainE.setTotalPunto(dtoE.getTotalPunto());
+            domainE.setEstado(dtoE.getEstado());
+            domainE.setIdEtapa(domain.getId());
+
+            evaluacionesDomains.add(domainE);
+
+            //domain.getEvaluaciones().add(domainE);
+        }
+        evalDao.saveAll(evaluacionesDomains);
+
+        domain.setEvaluaciones(evaluacionesDomains);
+        //etapaDao.save(domain);
+
+        return true;
+    }
 
 
     @Override
