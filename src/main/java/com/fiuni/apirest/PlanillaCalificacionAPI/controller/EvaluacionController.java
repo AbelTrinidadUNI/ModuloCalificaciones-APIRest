@@ -1,22 +1,17 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dao.evaluacion.IEvaluacionDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionNuevaEnTablaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.evaluacion.IEvaluacionService;
-import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
-import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/evaluaciones")

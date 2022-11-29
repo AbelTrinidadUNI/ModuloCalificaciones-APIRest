@@ -3,11 +3,8 @@ package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaResult;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.detallePN.IDetallePlanillaNotaService;
-import com.fiuni.apirest.PlanillaCalificacionAPI.service.planillaNota.IPlanillaNotaService;
-import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;

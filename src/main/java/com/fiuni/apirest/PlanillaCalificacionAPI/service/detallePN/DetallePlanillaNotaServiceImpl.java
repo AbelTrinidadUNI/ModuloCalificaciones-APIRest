@@ -6,20 +6,16 @@ import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNo
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaDTO;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.detallePN.DetallePlanillaNotaResult;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.evaluacion.EvaluacionConEtapaDTO;
-import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.PlanillaNotaDto;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.base.BaseServiceImpl;
-import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.utils.Settings;
 import com.library.domainLibrary.domain.detallePN.DetallePlanillaNotaDomain;
 import com.library.domainLibrary.domain.etapa.EtapaDomain;
 import com.library.domainLibrary.domain.evaluacion.EvaluacionDomain;
-import com.library.domainLibrary.domain.planillaNota.PlanillaNotaDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

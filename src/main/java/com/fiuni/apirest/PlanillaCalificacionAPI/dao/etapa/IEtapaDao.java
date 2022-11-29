@@ -14,9 +14,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
-public interface IEtapaDao extends JpaRepository<EtapaDomain, Integer> {
+public interface IEtapaDao extends CrudRepository<EtapaDomain, Integer> {
     public Page<EtapaDomain> findAll(Pageable pageable);
 
     public Page<EtapaDomain> getByEstadoTrue(Pageable pageable);
@@ -41,5 +42,9 @@ public interface IEtapaDao extends JpaRepository<EtapaDomain, Integer> {
     public Integer deleteAbsolut(Integer id);
 
 
+    //SELECT * from etapas e LEFT JOIN evaluaciones ev ON e.ID_ETAPA = ev.id_etapa WHERE ev.id_etapa is null
+
+    @Query(value = "SELECT e FROM EtapaDomain e LEFT JOIN EvaluacionDomain ev ON e.id = ev.id WHERE ev IS NULL")
+    public List<EtapaDomain> getAllWithoutUse();
 
 }

@@ -1,14 +1,12 @@
 package com.fiuni.apirest.PlanillaCalificacionAPI.controller;
 
-import com.fiuni.apirest.PlanillaCalificacionAPI.dao.detallePN.IDetallePNDao;
 import com.fiuni.apirest.PlanillaCalificacionAPI.dto.planillaNota.*;
 import com.fiuni.apirest.PlanillaCalificacionAPI.service.planillaNota.IPlanillaNotaService;
-import com.fiuni.apirest.PlanillaCalificacionAPI.utils.Settings;
+import com.fiuni.apirest.PlanillaCalificacionAPI.service.etapa.utils.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

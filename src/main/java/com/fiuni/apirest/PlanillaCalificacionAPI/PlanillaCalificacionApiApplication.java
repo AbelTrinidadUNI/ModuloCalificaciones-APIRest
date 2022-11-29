@@ -8,12 +8,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.persistence.Entity;
 
 
 @EnableCaching
+@EnableScheduling
 @SpringBootApplication
 @EntityScan({"com.library.domainLibrary.domain.base",
 		"com.library.domainLibrary.domain.ciclo",
